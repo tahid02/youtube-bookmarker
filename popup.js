@@ -1,6 +1,5 @@
 import { getActiveTabURL } from "./utils.js";
 
-// adding a new bookmark row to the popup
 const addNewBookmark = (bookmarks, bookmark) => {
   const bookmarkTitleElement = document.createElement("div");
   const controlsElement = document.createElement("div");
@@ -75,6 +74,7 @@ const setBookmarkAttributes = (src, eventListener, controlParentElement) => {
   controlElement.addEventListener("click", eventListener);
   controlParentElement.appendChild(controlElement);
 };
+
 document.addEventListener("DOMContentLoaded", async () => {
   const activeTab = await getActiveTabURL();
   const queryParameters = activeTab.url.split("?")[1];
@@ -87,6 +87,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const currentVideoBookmarks = data[currentVideo]
         ? JSON.parse(data[currentVideo])
         : [];
+
       viewBookmarks(currentVideoBookmarks);
     });
   } else {
