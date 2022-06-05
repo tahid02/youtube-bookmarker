@@ -9,7 +9,6 @@ const addNewBookmark = (bookmarks, bookmark) => {
   controlsElement.className = "bookmark-controls";
 
   setBookmarkAttributes("play", onPlay, controlsElement);
-  setBookmarkAttributes("delete", onDelete, controlsElement);
 
   newBookmarkElement.id = "bookmark-" + bookmark.time;
   newBookmarkElement.className = "bookmark";
@@ -36,7 +35,15 @@ const viewBookmarks = (currentBookmarks = []) => {
   return;
 };
 
-const onPlay = (e) => {};
+const onPlay = async (e) => {
+  const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+  const activeTab = await getActiveTabURL();
+
+  chrome.tabs.sendMessage(activeTab.id, {
+    type: "PLAY",
+    value: bookmarkTime,
+  });
+};
 
 const onDelete = (e) => {};
 
