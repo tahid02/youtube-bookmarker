@@ -1,3 +1,5 @@
+import { getActiveTabURL } from "./utils.js";
+
 // adding a new bookmark row to the popup
 const addNewBookmark = (bookmarks, bookmark) => {
   const bookmarkTitleElement = document.createElement("div");
@@ -9,6 +11,7 @@ const addNewBookmark = (bookmarks, bookmark) => {
   controlsElement.className = "bookmark-controls";
 
   setBookmarkAttributes("play", onPlay, controlsElement);
+  setBookmarkAttributes("delete", onDelete, controlsElement);
 
   newBookmarkElement.id = "bookmark-" + bookmark.time;
   newBookmarkElement.className = "bookmark";
@@ -45,7 +48,24 @@ const onPlay = async (e) => {
   });
 };
 
-const onDelete = (e) => {};
+const onDelete = async (e) => {
+  const activeTab = await getActiveTabURL();
+  const bookmarkTime = e.target.parentNode.parentNode.getAttribute("timestamp");
+  const bookmarkElementToDelete = document.getElementById(
+    "bookmark-" + bookmarkTime
+  );
+
+  bookmarkElementToDelete.parentNode.removeChild(bookmarkElementToDelete);
+
+  chrome.tabs.sendMessage(
+    activeTab.id,
+    {
+      type: "DELETE",
+      value: bookmarkTime,
+    },
+    viewBookmarks
+  );
+};
 
 const setBookmarkAttributes = (src, eventListener, controlParentElement) => {
   const controlElement = document.createElement("img");
@@ -55,7 +75,6 @@ const setBookmarkAttributes = (src, eventListener, controlParentElement) => {
   controlElement.addEventListener("click", eventListener);
   controlParentElement.appendChild(controlElement);
 };
-// get the current video bookmark (if available) from local storage
 document.addEventListener("DOMContentLoaded", async () => {
   const activeTab = await getActiveTabURL();
   const queryParameters = activeTab.url.split("?")[1];
